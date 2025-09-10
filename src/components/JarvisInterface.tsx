@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Power, Settings, Zap, Smartphone } from 'lucide-react';
+import { Mic, MicOff, Power, Settings, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import jarvisHero from '@/assets/jarvis-hero.jpg';
 import SettingsPanel from './SettingsPanel';
-import { MobileServices } from '@/services/mobileServices';
 
 const JarvisInterface = () => {
   const [isListening, setIsListening] = useState(false);
@@ -12,16 +11,6 @@ const JarvisInterface = () => {
   const [currentCommand, setCurrentCommand] = useState('');
   const [jarvisResponse, setJarvisResponse] = useState('হ্যালো স্যার, আমি JARVIS। আপনার সেবায় প্রস্তুত।');
   const [showSettings, setShowSettings] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Check if running on mobile
-    const checkMobile = async () => {
-      const deviceInfo = await MobileServices.getDeviceInfo();
-      setIsMobile(!!deviceInfo);
-    };
-    checkMobile();
-  }, []);
 
   const handleVoiceToggle = () => {
     if (!isPowered) return;
@@ -29,18 +18,6 @@ const JarvisInterface = () => {
     setIsListening(!isListening);
     if (!isListening) {
       setJarvisResponse('আমি শুনছি স্যার...');
-      // Simulate voice command after 3 seconds
-      setTimeout(async () => {
-        const testCommand = "হোয়াটসঅ্যাপ খুলুন";
-        setCurrentCommand(testCommand);
-        const response = await MobileServices.processVoiceCommand(testCommand);
-        setJarvisResponse(response);
-        setIsListening(false);
-        
-        if (isMobile) {
-          await MobileServices.showToast(response);
-        }
-      }, 3000);
     } else {
       setJarvisResponse('ঠিক আছে স্যার।');
     }
@@ -63,22 +40,6 @@ const JarvisInterface = () => {
     "ফ্ল্যাশলাইট চালু করুন",
     "১০ মিনিট পর রিমাইন্ড করুন"
   ];
-
-  const handleCommandExample = async (command: string) => {
-    if (!isPowered) return;
-    
-    setCurrentCommand(command);
-    setJarvisResponse('আমি শুনছি স্যার...');
-    
-    setTimeout(async () => {
-      const response = await MobileServices.processVoiceCommand(command);
-      setJarvisResponse(response);
-      
-      if (isMobile) {
-        await MobileServices.showToast(response);
-      }
-    }, 1500);
-  };
 
   return (
     <div className="min-h-screen bg-background jarvis-grid relative overflow-hidden">
@@ -107,12 +68,6 @@ const JarvisInterface = () => {
             <h1 className="text-3xl font-bold text-primary text-glow">
               JARVIS
             </h1>
-            {isMobile && (
-              <div className="flex items-center space-x-1">
-                <Smartphone className="w-5 h-5 text-accent" />
-                <span className="text-xs text-accent font-medium">Mobile</span>
-              </div>
-            )}
           </div>
           
           <Button
@@ -225,7 +180,6 @@ const JarvisInterface = () => {
               {commandExamples.map((command, index) => (
                 <Button
                   key={index}
-                  onClick={() => handleCommandExample(command)}
                   variant="outline"
                   className="justify-start text-left border-accent/50 text-accent hover:bg-accent/20 hover:glow-accent"
                   disabled={!isPowered}
