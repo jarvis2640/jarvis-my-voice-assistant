@@ -2,41 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* JARVIS AI Assistant Design System - Futuristic/Cyberpunk Theme
+All colors MUST be HSL for proper theming support.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark futuristic background */
+    --background: 220 50% 3%;
+    --foreground: 200 100% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Cards with subtle glow */
+    --card: 220 45% 8%;
+    --card-foreground: 200 100% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover styling */
+    --popover: 220 45% 8%;
+    --popover-foreground: 200 100% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Electric blue primary */
+    --primary: 195 100% 50%;
+    --primary-foreground: 220 50% 3%;
+    --primary-glow: 195 100% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Purple secondary */
+    --secondary: 280 85% 60%;
+    --secondary-foreground: 200 100% 95%;
+    --secondary-glow: 280 85% 80%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted elements */
+    --muted: 220 30% 15%;
+    --muted-foreground: 200 20% 70%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neon accent */
+    --accent: 120 100% 55%;
+    --accent-foreground: 220 50% 3%;
+    --accent-glow: 120 100% 75%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive red */
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 200 100% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs */
+    --border: 220 30% 20%;
+    --input: 220 30% 12%;
+    --ring: 195 100% 50%;
 
-    --radius: 0.5rem;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(195 100% 50%), hsl(280 85% 60%));
+    --gradient-secondary: linear-gradient(180deg, hsl(220 45% 8%), hsl(220 50% 3%));
+    --gradient-accent: linear-gradient(90deg, hsl(195 100% 50%), hsl(120 100% 55%));
+    --gradient-glow: radial-gradient(circle, hsl(195 100% 50% / 0.3), transparent 70%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsl(195 100% 50% / 0.3);
+    --shadow-accent: 0 0 20px hsl(120 100% 55% / 0.4);
+    --shadow-secondary: 0 0 25px hsl(280 85% 60% / 0.3);
+
+    /* Animations */
+    --pulse-duration: 2s;
+    --glow-intensity: 0.6;
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -102,4 +129,73 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom animations and utilities for JARVIS */
+@layer utilities {
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .glow-accent {
+    box-shadow: var(--shadow-accent);
+  }
+  
+  .glow-secondary {
+    box-shadow: var(--shadow-secondary);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .pulse-glow {
+    animation: pulse-glow var(--pulse-duration) ease-in-out infinite alternate;
+  }
+
+  .jarvis-grid {
+    background-image: 
+      linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary)), 0 0 15px hsl(var(--primary));
+  }
+  100% {
+    box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
 }
