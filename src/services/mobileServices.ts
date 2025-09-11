@@ -171,78 +171,78 @@ export class MobileServices {
     // System commands
     if (lowerCommand.includes('time') || lowerCommand.includes('সময়')) {
       const now = new Date();
-      return `Current time is ${now.toLocaleTimeString()}`;
+      return `বর্তমান সময়: ${now.toLocaleTimeString('bn-BD')}`;
     }
     
     if (lowerCommand.includes('date') || lowerCommand.includes('তারিখ')) {
       const now = new Date();
-      return `Today is ${now.toLocaleDateString()}`;
+      return `আজকের তারিখ: ${now.toLocaleDateString('bn-BD')}`;
     }
     
     // App control commands
     if (lowerCommand.includes('open') || lowerCommand.includes('খোল')) {
       if (lowerCommand.includes('camera') || lowerCommand.includes('ক্যামেরা')) {
         await this.openApp('com.android.camera');
-        return 'Opening camera...';
+        return 'ক্যামেরা খোলা হচ্ছে...';
       }
       
       if (lowerCommand.includes('gallery') || lowerCommand.includes('গ্যালারি')) {
         await this.openApp('com.android.gallery3d');
-        return 'Opening gallery...';
+        return 'গ্যালারি খোলা হচ্ছে...';
       }
       
       if (lowerCommand.includes('settings') || lowerCommand.includes('সেটিংস')) {
         await this.openApp('com.android.settings');
-        return 'Opening settings...';
+        return 'সেটিংস খোলা হচ্ছে...';
       }
       
       if (lowerCommand.includes('phone') || lowerCommand.includes('ফোন')) {
         await this.openApp('com.android.dialer');
-        return 'Opening phone...';
+        return 'ফোন অ্যাপ খোলা হচ্ছে...';
       }
       
       if (lowerCommand.includes('messages') || lowerCommand.includes('মেসেজ')) {
         await this.openApp('com.android.mms');
-        return 'Opening messages...';
+        return 'মেসেজ অ্যাপ খোলা হচ্ছে...';
       }
     }
     
     // Website commands
     if (lowerCommand.includes('google') || lowerCommand.includes('গুগল')) {
       await this.openWebsite('https://www.google.com');
-      return 'Opening Google...';
+      return 'গুগল খোলা হচ্ছে...';
     }
     
     if (lowerCommand.includes('youtube') || lowerCommand.includes('ইউটিউব')) {
       await this.openWebsite('https://www.youtube.com');
-      return 'Opening YouTube...';
+      return 'ইউটিউব খোলা হচ্ছে...';
     }
     
     if (lowerCommand.includes('facebook') || lowerCommand.includes('ফেসবুক')) {
       await this.openWebsite('https://www.facebook.com');
-      return 'Opening Facebook...';
+      return 'ফেসবুক খোলা হচ্ছে...';
     }
     
     // Notification commands
     if (lowerCommand.includes('remind') || lowerCommand.includes('মনে করিয়ে')) {
       await this.scheduleNotification(
-        'JARVIS Reminder',
+        'JARVIS রিমাইন্ডার',
         command,
         5 * 60 * 1000 // 5 minutes
       );
-      return 'Reminder set for 5 minutes from now.';
+      return '৫ মিনিট পর রিমাইন্ডার সেট করা হয়েছে।';
     }
     
     // Device info commands
     if (lowerCommand.includes('device info') || lowerCommand.includes('ডিভাইস তথ্য')) {
       const deviceInfo = await this.getDeviceInfo();
       if (deviceInfo) {
-        return `Device: ${deviceInfo.manufacturer} ${deviceInfo.model}, OS: ${deviceInfo.operatingSystem} ${deviceInfo.osVersion}`;
+        return `ডিভাইস: ${deviceInfo.manufacturer} ${deviceInfo.model}, OS: ${deviceInfo.operatingSystem} ${deviceInfo.osVersion}`;
       }
     }
     
     // Default response
-    return `I heard: "${command}". How can I help you with that?`;
+    return `আমি শুনেছি: "${command}"। এর জন্য আমি কিভাবে সাহায্য করতে পারি?`;
   }
 
   // Background task management
