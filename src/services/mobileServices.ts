@@ -24,6 +24,10 @@ export class MobileServices {
       
       // Request notification permissions
       await this.requestNotificationPermissions();
+
+      // Preload contacts (asks permission once)
+      ContactServices.loadContacts().catch(() => {});
+
       
       // Set up app state listeners
       App.addListener('appStateChange', ({ isActive }) => {
