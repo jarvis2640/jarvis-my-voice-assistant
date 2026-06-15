@@ -6,6 +6,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { Browser } from '@capacitor/browser';
+import { ContactServices, CommunicationServices, Platform } from './contactServices';
 
 export class MobileServices {
   static isNative = Capacitor.isNativePlatform();
