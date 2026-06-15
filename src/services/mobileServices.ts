@@ -6,6 +6,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { Browser } from '@capacitor/browser';
+import { ContactServices, CommunicationServices, Platform } from './contactServices';
 
 export class MobileServices {
   static isNative = Capacitor.isNativePlatform();
@@ -23,6 +24,10 @@ export class MobileServices {
       
       // Request notification permissions
       await this.requestNotificationPermissions();
+
+      // Preload contacts (asks permission once)
+      ContactServices.loadContacts().catch(() => {});
+
       
       // Set up app state listeners
       App.addListener('appStateChange', ({ isActive }) => {
@@ -167,6 +172,70 @@ export class MobileServices {
   // Voice commands processing
   static async processVoiceCommand(command: string): Promise<string> {
     const lowerCommand = command.toLowerCase();
+
+    // ============ Call / Message commands ============
+    // Patterns: "call <name/number>", "<name> কে কল করো", "whatsapp message to <name> <msg>"
+    const callIntent = /(call|কল\s*কর|ফোন\s*কর|ডায়াল)/i.test(command);
+    const msgIntent = /(message|msg|মেসেজ|লিখে?\s*পাঠা|পাঠাও|বার্তা)/i.test(command);
+
+    let platform: Platform | null = null;
+    if (/whatsapp|হোয়াটসঅ্যাপ|হোয়াটস্যাপ|ওয়াটসঅ্যাপ/i.test(command)) platform = 'whatsapp';
+    else if (/messenger|মেসেঞ্জার/i.test(command)) platform = 'messenger';
+    else if (/\bimo\b|ইমো/i.test(command)) platform = 'imo';
+    else if (/\bsms\b|এসএমএস/i.test(command)) platform = 'sms';
+
+    // Direct number dial: e.g., "call 017xxxxxxxx" or "+8801xxxxxxxx এ কল"
+    const numberMatch = command.match(/(\+?\d[\d\s-]{6,}\d)/);
+
+    if (callIntent || msgIntent || platform) {
+      // Extract target name (strip known keywords + number)
+      let target = command
+        .replace(/(call|কল\s*কর\w*|ফোন\s*কর\w*|ডায়াল|message|msg|মেসেজ|পাঠাও|লিখে?\s*পাঠা\w*|বার্তা|whatsapp|হোয়াটসঅ্যাপ|ওয়াটসঅ্যাপ|messenger|মেসেঞ্জার|\bimo\b|ইমো|\bsms\b|এসএমএস|to|কে|তে|এ|in|on|by)/gi, ' ')
+        .replace(/(\+?\d[\d\s-]{6,}\d)/g, ' ')
+        .trim();
+
+      // Optional message body after ":" or "বলো"/"লিখো"
+      let body = '';
+      const bodyMatch = command.split(/[:：]|বলো|লিখো|লেখো|say/i)[1];
+      if (bodyMatch && msgIntent) body = bodyMatch.trim();
+
+      let number: string | null = null;
+      let displayName = '';
+
+      if (numberMatch) {
+        number = numberMatch[1];
+        displayName = number;
+      } else if (target && target.length >= 2) {
+        const contact = await ContactServices.findByName(target);
+        if (contact) {
+          number = contact.phones[0];
+          displayName = contact.name;
+        } else {
+          return `"${target}" নামে কোনো কন্ট্যাক্ট পাইনি স্যার। অনুমতি দিন অথবা সঠিক নাম বলুন।`;
+        }
+      }
+
+      if (!number) {
+        return 'কাকে কল/মেসেজ করব স্যার? নাম বা নাম্বার বলুন।';
+      }
+
+      if (callIntent && !msgIntent) {
+        CommunicationServices.call(number);
+        return `${displayName} কে কল করা হচ্ছে...`;
+      }
+
+      const plat: Platform = platform || (msgIntent ? 'sms' : 'phone');
+      CommunicationServices.send(plat, number, body);
+      const platName = { whatsapp: 'WhatsApp', messenger: 'Messenger', imo: 'imo', sms: 'SMS', phone: 'ফোন' }[plat];
+      return `${platName} এ ${displayName} কে ${msgIntent ? 'মেসেজ পাঠাচ্ছি' : 'কানেক্ট করছি'}...`;
+    }
+
+    // Sync contacts command
+    if (/sync\s*contacts?|কন্ট্যাক্ট\s*(লোড|সিঙ্ক|রিফ্রেশ)/i.test(command)) {
+      const list = await ContactServices.loadContacts(true);
+      return `${list.length} টি কন্ট্যাক্ট লোড হয়েছে স্যার।`;
+    }
+
     
     // System commands
     if (lowerCommand.includes('time') || lowerCommand.includes('সময়')) {
